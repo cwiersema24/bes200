@@ -96,14 +96,7 @@ namespace LibraryApi.Controllers
         {
             GetBookDetailsResponse book = await _booksQuery.GetBookById(bookId);
 
-            if (book == null)
-            {
-                return NotFound();
-            }
-            else
-            {
-                return Ok(book);
-            }
+            return this.Maybe(book);
         }
 
 
