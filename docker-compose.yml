@@ -19,10 +19,28 @@ services:
         depends_on:
           - zookeeper
     sql:
-        image: cwiersema/library-sql
+        image: cwiersema/library-sql:final
         ports:
             - 1433:1433
     redis:
         image: redis:latest
         ports:
             - 6379:6379
+    reservationprocessor:
+        image: cwiersema/reservationprocessor:latest
+        environment: 
+          - kafka:bootstrapservers=kafka:9092
+          - kafka:groupid=reservations-consumer
+          - kafka:enableautocommit=true
+          - kafka:securityprotocol=0
+          - kafka:autooffsetreset=0
+          - kafka:http://api:3000/
+    api:
+      image: cwiersema/libraryapi:latest
+      ports: 
+        - 5000:80
+      environment: 
+        - ConnectionStrings__library=server=sql;database=books_prod;user=sa;password=TokyoJoe138!
+        - ConnectionStrings__redis=redis
+        - message=Hi
+        - kafka:bootstrapservers=kafka:9092
